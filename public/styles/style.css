@@ -280,21 +280,6 @@ button {
     box-shadow: 0 2px 4px rgba(46, 204, 113, 0.4);
 }
 
-/* Reusable button styles */
-.button-base {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: var(--button-transition);
-}
-
-.button-base:hover {
-    transform: var(--hover-transform);
-    box-shadow: var(--hover-shadow);
-}
-
 /* Apply base styles to buttons */
 #startGuessing,
 #stopGuessing,
@@ -320,11 +305,6 @@ button {
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes shimmer {
-    0% { background-position: 100% 0; }
-    100% { background-position: -100% 0; }
 }
 
 @keyframes scaleIn {
