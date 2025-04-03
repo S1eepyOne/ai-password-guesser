@@ -85,5 +85,8 @@ Don't worry if you're new to this! Follow these simple steps:
 ## Contributing
 Contributions are welcome! Please feel free to submit a pull request or open an issue for any suggestions or improvements.
 
+## Security
+This project is a demonstration of password guessing techniques for educational purposes only. See SECURITY.md file for more details.
+
 ## License
 This project is licensed under the MIT License. See the LICENSE file for more details.
