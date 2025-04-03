@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CyberCrack: An AI-powered password guessing demonstration using parallel processing">
+    <meta name="theme-color" content="#2c3e50">
+    <meta name="robots" content="noindex, nofollow">
+    <title>CyberCrack: AI Password Detective</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
+    
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="styles/style.css">
+    
+    <!-- Preload Critical Assets -->
+    <link rel="preload" href="scripts/worker.js" as="script">
+    <link rel="preload" href="scripts/main.js" as="script">
+</head>
+<body>
+    <div class="container">
+        <h1>CyberCrack</h1>
+        <p class="subtitle">AI Password Detective</p>
+        <button id="infoButton" class="info-button">ⓘ</button>
+        <div class="input-section">
+            <p>Enter a 5-character password using letters, numbers, or symbols:</p>
+            <label for="passwordInput">Password:</label>
+            <input type="text" id="passwordInput" maxlength="5" placeholder="Enter password">
+        </div>
+        
+        <div class="button-group">
+            <button id="startGuessing">Start Guessing</button>
+            <button id="stopGuessing">Stop Guessing</button>
+        </div>
+
+        <div id="progressContainer">
+            <div id="progressBar">
+                <div id="progress"></div>
+            </div>
+            <p id="progressText">0%</p>
+        </div>
+
+        <div id="output" aria-live="polite"></div>
+        
+        <!-- Add the popup container -->
+        <div id="successPopup" class="popup">
+            <div class="popup-content">
+                <h2>Password Found!</h2>
+                <p id="popupMessage"></p>
+                <button id="closePopup">Close</button>
+            </div>
+        </div>
+
+        <!-- Add the info popup container -->
+        <div id="infoPopup" class="popup">
+            <div class="popup-content">
+                <h2>How It Works</h2>
+                <p>This AI Password Guesser uses parallel processing with Web Workers to systematically generate and test possible password combinations. It divides the character set among multiple workers to efficiently search through all possible combinations until it finds the correct password. The process is visualized through a progress bar that shows the percentage of possible combinations tested.</p>
+                <button id="closeInfoPopup">Close</button>
+            </div>
+        </div>
+    </div>
+    <script src="scripts/main.js"></script>
+</body>
+</html>

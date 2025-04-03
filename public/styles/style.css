@@ -1,0 +1,339 @@
+/* Modern Color Palette */
+:root {
+    --primary-color: #2ecc71;     /* Emerald green */
+    --secondary-color: #e74c3c;   /* Soft red */
+    --bg-color: #2c3e50;         /* Dark blue-grey */
+    --text-color: #ecf0f1;       /* Light grey */
+    --container-bg: #34495e;     /* Lighter blue-grey */
+    --shadow-color: rgba(46, 204, 113, 0.3);
+    --hover-transform: translateY(-2px);
+    --hover-shadow: 0 5px 15px rgba(46, 204, 113, 0.4);
+    --gradient-primary: linear-gradient(90deg, var(--primary-color) 0%, #27ae60 100%);
+    --gradient-success: linear-gradient(90deg, #00ff00, #00ff00);
+    --button-transition: all 0.3s ease;
+}
+
+/* General body styling */
+body {
+    font-family: 'Segoe UI', 'Arial', sans-serif;
+    background: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Header styling */
+h1 {
+    text-align: center;
+    color: var(--primary-color);
+    font-size: 2.5em;
+    margin-bottom: 1.5rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Main container styling */
+.container {
+    width: 90%;
+    max-width: 500px;
+    background: var(--container-bg);
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.6s ease-out;
+    max-height: 90vh; /* Change from height: 100vh to max-height: 90vh */
+    overflow-y: auto;
+    box-sizing: border-box;
+    position: relative;
+}
+
+/* Input section styling */
+.input-section {
+    margin-bottom: 1.5rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 1.1em;
+    color: var(--text-color);
+}
+
+input[type="text"] {
+    width: calc(100% - 24px);
+    padding: 12px;
+    border: 2px solid var(--primary-color);
+    border-radius: 8px;
+    font-size: 1.1em;
+    background: rgba(0, 0, 0, 0.1);
+    color: var(--text-color);
+    transition: all 0.3s ease;
+    margin-bottom: 1rem;
+}
+
+input[type="text"]:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 10px var(--shadow-color);
+    background: rgba(0, 0, 0, 0.2);
+}
+
+/* Button group styling */
+.button-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+#startGuessing {
+    background: var(--primary-color);
+    color: var(--container-bg);
+}
+
+#startGuessing:hover {
+    background: #27ae60;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4);
+}
+
+#stopGuessing {
+    background: var(--secondary-color);
+    color: var(--text-color);
+}
+
+#stopGuessing:hover {
+    background: #c0392b;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+}
+
+/* Progress bar container styling */
+#progressContainer {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    padding: 4px;
+    position: relative;
+    height: 40px;
+    margin: 2rem 0;
+    overflow: visible;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+/* Progress bar text */
+#progressText {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--text-color);
+    font-weight: 600;
+    font-size: 1.1em;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    z-index: 4;
+    margin: 0;
+    pointer-events: none;
+}
+
+/* Progress bar itself */
+#progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0;
+    background: var(--gradient-primary);
+    transition: width 0.1s linear;
+    border-radius: 6px;
+    z-index: 3;
+    display: block;
+}
+
+/* Progress completion effect */
+#progress[style*="width: 100%"] {
+    background: var(--gradient-success);
+}
+
+/* Output message styling */
+#output {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    border-radius: 8px;
+    font-size: 1.1em;
+    text-align: center;
+    font-weight: 500;
+    background: rgba(0, 0, 0, 0.1);
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Popup styling */
+.popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.popup.active {
+    display: flex;
+    opacity: 1;
+    align-items: center;
+    justify-content: center;
+}
+
+.popup-content {
+    background: var(--container-bg);
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 0 30px var(--shadow-color);
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    position: relative;
+    transform: scale(0.8);
+    transition: transform 0.3s ease-out;
+}
+
+.popup.active .popup-content {
+    transform: scale(1);
+}
+
+#closePopup {
+    margin-top: 1rem;
+    padding: 10px 20px;
+    background: var(--primary-color);
+    color: var(--container-bg);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+#closePopup:hover {
+    background: #27ae60;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4);
+}
+
+/* Info button styling */
+.info-button {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-color);
+    font-size: 18px;
+    font-weight: bold;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid var(--primary-color);
+    padding: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(5px);
+}
+
+.info-button:hover {
+    background: var(--primary-color);
+    color: var(--container-bg);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(46, 204, 113, 0.4);
+}
+
+.info-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(46, 204, 113, 0.4);
+}
+
+/* Reusable button styles */
+.button-base {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: var(--button-transition);
+}
+
+.button-base:hover {
+    transform: var(--hover-transform);
+    box-shadow: var(--hover-shadow);
+}
+
+/* Apply base styles to buttons */
+#startGuessing,
+#stopGuessing,
+#closePopup,
+#closeInfoPopup {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: var(--button-transition);
+}
+
+#startGuessing:hover,
+#stopGuessing:hover,
+#closePopup:hover,
+#closeInfoPopup:hover {
+    transform: var(--hover-transform);
+    box-shadow: var(--hover-shadow);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+    0% { background-position: 100% 0; }
+    100% { background-position: -100% 0; }
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
