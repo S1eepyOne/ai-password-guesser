@@ -59,6 +59,7 @@ Don't worry if you're new to this! Follow these simple steps:
    - Open your web browser
    - Go to: http://localhost:3000
    - That's it! You're ready to try guessing passwords
+   - To end the server simply kill the terminal by pressing the Trash Can
 
 ### Troubleshooting
 - If you see "npm not found": Close VS Code and restart your computer
