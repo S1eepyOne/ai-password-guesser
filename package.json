@@ -13,7 +13,7 @@
     "password",
     "guesser"
   ],
-  "author": "AIH",
+  "author": "S1eepyOne",
   "license": "MIT",
   "dependencies": {
     "express": "^4.18.2"
