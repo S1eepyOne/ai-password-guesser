@@ -3,6 +3,46 @@
 ## Overview
 The AI Password Guesser is a web-based application that utilizes artificial intelligence techniques to guess a 5-character password using letters, numbers, and symbols. The application features a user-friendly interface that allows users to interact with the password guessing algorithm.
 
+### Technical Architecture
+1. **Frontend**:
+   - Built with **HTML**, **CSS**, and **JavaScript**.
+   - The UI is styled using a modern color palette and responsive design principles.
+   - Key components include:
+     - Password input field with validation.
+     - Progress bar for visual feedback.
+     - Popups for success messages and informational content.
+
+2. **Web Workers**:
+   - Implemented in `worker.js`, Web Workers handle the brute-force guessing logic in a separate thread.
+   - Workers generate password combinations using a generator function and test them against the user-provided password.
+   - Progress updates are sent to the main thread every 10,000 guesses to minimize communication overhead.
+
+3. **Main Thread Logic**:
+   - The main thread, implemented in `main.js`, manages:
+     - Worker initialization and termination.
+     - Aggregation of progress updates.
+     - UI updates, including the progress bar and output messages.
+   - The guessing process is throttled to ensure smooth UI performance.
+
+4. **Server**:
+   - A lightweight **Express.js** server (`server.js`) serves the static files.
+   - Security headers are added to protect against common vulnerabilities (e.g., XSS, clickjacking).
+
+### Password Guessing Algorithm
+1. **Character Set**:
+   - The application uses a predefined character set: `abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()`.
+   - This set includes uppercase and lowercase letters, numbers, and common symbols.
+
+2. **Brute-Force Logic**:
+   - Workers generate all possible combinations of the character set for a 5-character password.
+   - The guessing process is optimized by dividing the character set among multiple workers.
+
+3. **Generator Function**:
+   - A generator function systematically produces password combinations, ensuring memory efficiency by avoiding precomputing all combinations.
+
+4. **Early Termination**:
+   - If a worker finds the correct password, it immediately notifies the main thread, which terminates all other workers.
+
 ## Project Structure
 ```
 ai-password-guesser
