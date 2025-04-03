@@ -69,7 +69,6 @@ document.addEventListener('DOMContentLoaded', () => {
         workers = [];
         completedGuesses = 0;
         totalGuesses = 0;
-        resetProgressBar();
         output.textContent = "";
         output.style.color = '#fff';
     }
@@ -81,14 +80,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 hideFunction();
             }
         });
-    }
-
-    // Simplified progress bar reset
-    function resetProgressBar() {
-        progressBar.style.width = "0%";
-        progressBar.style.display = "block";
-        progressBar.style.background = "var(--gradient-primary)";
-        progressText.textContent = "0%";
     }
 
     startButton.addEventListener('click', () => {
@@ -180,41 +171,3 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
-
-function* generatePasswords(characters, maxLength) {
-    function* helper(prefix, length) {
-        if (length === 0) {
-            yield prefix;
-            return;
-        }
-        for (const char of characters) {
-            yield* helper(prefix + char, length - 1);
-        }
-    }
-    for (let length = 1; length <= maxLength; length++) {
-        yield* helper("", length);
-    }
-}
-
-let guessingInterval;
-
-// Create a Web Worker for parallelized guessing
-function createWorker(charset, passwordInput, batchSize, onProgress, onSuccess, onFailure) {
-    const worker = new Worker('scripts/worker.js');
-    worker.postMessage({ charset, passwordInput, batchSize });
-
-    worker.onmessage = (event) => {
-        const { type, data } = event.data;
-        if (type === 'progress') {
-            onProgress(data.progress);
-        } else if (type === 'success') {
-            onSuccess(data.guessedPassword);
-            worker.terminate();
-        } else if (type === 'failure') {
-            onFailure();
-            worker.terminate();
-        }
-    };
-
-    return worker;
-}
