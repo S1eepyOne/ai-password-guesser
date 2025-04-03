@@ -13,25 +13,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const infoButton = document.getElementById('infoButton');
     const infoPopup = document.getElementById('infoPopup');
     const closeInfoPopup = document.getElementById('closeInfoPopup');
+    const strengthBar = document.getElementById('strengthBar');
+    const strengthText = document.getElementById('strengthText');
 
     let workers = [];
     let totalGuesses = 0;
     let completedGuesses = 0;
+    let lastProgressValue = 0;
+    let lastUpdate = 0;
 
     function updateProgressBar() {
-        if (totalGuesses === 0) {
-            return;
-        }
-
         const progressValue = (completedGuesses / totalGuesses) * 100;
-        progressBar.style.width = `${progressValue}%`;
-        progressText.textContent = `${Math.floor(progressValue)}%`;
 
-        // Update background color immediately when reaching 100%
-        if (progressValue >= 100) {
-            progressBar.style.background = 'linear-gradient(90deg, #00ff00, #00ff00)';
-        } else {
-            progressBar.style.background = 'linear-gradient(90deg, var(--primary-color) 0%, #27ae60 100%)';
+        if (Math.abs(progressValue - lastProgressValue) >= 1) {
+            progressBar.style.width = `${progressValue}%`;
+            progressText.textContent = `${Math.floor(progressValue)}%`;
+            lastProgressValue = progressValue;
+            lastUpdate = Date.now();
         }
     }
 
@@ -65,8 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Consolidated state reset function
     function resetState() {
-        workers.forEach(worker => worker.terminate());
-        workers = [];
+        terminateWorkers();
         completedGuesses = 0;
         totalGuesses = 0;
         output.textContent = "";
@@ -82,18 +79,35 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function setInputFieldState(isDisabled) {
+        inputField.disabled = isDisabled;
+    }
+
+    function terminateWorkers() {
+        workers.forEach((w) => w.terminate());
+        workers = [];
+    }
+
+    function isValidPassword(password) {
+        const validCharacters = /^[a-zA-Z0-9!@#$%^&*()]+$/;
+        return password.length === 5 && validCharacters.test(password);
+    }
+
     startButton.addEventListener('click', () => {
         resetState();
-        
+
+        // Disable the password input field when guessing starts
+        setInputFieldState(true);
+
         // Ensure progress bar and container are visible
         document.getElementById('progressContainer').style.display = 'block';
         progressBar.style.display = 'block';
         output.textContent = "AI is guessing...";
 
         const password = inputField.value;
-        const validCharacters = /^[a-zA-Z0-9!@#$%^&*()]+$/;
-        if (password.length !== 5 || !validCharacters.test(password)) {
+        if (!isValidPassword(password)) {
             alert("Please enter a valid 5-character password using letters, numbers, or symbols.");
+            setInputFieldState(false); // Re-enable the input field if validation fails
             return;
         }
 
@@ -103,6 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
         totalGuesses = Math.pow(characterSet.length, password.length);
 
         if (!characterSet || !password) {
+            setInputFieldState(false); // Re-enable the input field if no password is provided
             return;
         }
 
@@ -120,20 +135,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (found) {
                     displayOutput(`Password guessed: ${guess}`, true);
                     showPopup(guess);
-                    workers.forEach((w) => w.terminate());
-                    workers = [];
+                    terminateWorkers();
+                    setInputFieldState(false); // Re-enable the input field when guessing is complete
                 } else {
                     workerProgress[i] = progress; // Update progress for this worker
                     completedGuesses = workerProgress.reduce((sum, p) => 
                         sum + Math.floor((p / 100) * (totalGuesses / numWorkers)), 0);
-                    requestAnimationFrame(updateProgressBar);
+                    
+                    // Throttle updates to every 100ms
+                    if (Date.now() - lastUpdate > 100) {
+                        requestAnimationFrame(updateProgressBar);
+                    }
                 }
             };
 
             worker.onerror = () => {
                 displayOutput('An error occurred while guessing', false);
-                workers.forEach((w) => w.terminate());
-                workers = [];
+                terminateWorkers();
+                setInputFieldState(false); // Re-enable the input field if an error occurs
             };
 
             workers.push(worker);
@@ -143,7 +162,10 @@ document.addEventListener('DOMContentLoaded', () => {
     stopButton.addEventListener('click', () => {
         resetState();
         displayOutput('Guessing stopped by the user.', false);
-        
+
+        // Re-enable the password input field when guessing stops
+        setInputFieldState(false);
+
         // Ensure the progress bar container stays visible
         document.getElementById('progressContainer').style.display = 'block';
     });
@@ -170,4 +192,55 @@ document.addEventListener('DOMContentLoaded', () => {
             if (infoPopup.classList.contains('active')) hideInfoPopup();
         }
     });
+
+    inputField.addEventListener('input', () => {
+        updateStrengthMeter(inputField.value);
+    });
+
+    function calculateStrength(password) {
+        let score = 0;
+
+        // Check for length
+        if (password.length >= 5) score += 1;
+
+        // Check for lowercase and uppercase letters
+        if (/[a-z]/.test(password)) score += 1;
+        if (/[A-Z]/.test(password)) score += 1;
+
+        // Check for numbers
+        if (/\d/.test(password)) score += 1;
+
+        // Check for special characters
+        if (/[@#$%^&*()!]/.test(password)) score += 1;
+
+        // Determine strength level
+        switch (score) {
+            case 1:
+                return { percent: 20, color: 'red', label: 'Very Weak' };
+            case 2:
+                return { percent: 40, color: 'orange', label: 'Weak' };
+            case 3:
+                return { percent: 60, color: 'yellow', label: 'Moderate' };
+            case 4:
+                return { percent: 80, color: 'lightgreen', label: 'Strong' };
+            case 5:
+                return { percent: 100, color: 'green', label: 'Very Strong' };
+            default:
+                return { percent: 0, color: 'red', label: 'N/A' };
+        }
+    }
+
+    function updateStrengthMeter(password) {
+        const strength = calculateStrength(password);
+        strengthBar.style.width = `${strength.percent}%`;
+        strengthBar.style.backgroundColor = strength.color;
+        strengthText.textContent = `Strength: ${strength.label}`;
+    }
+});
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        if (successPopup.classList.contains('active')) hidePopup();
+        if (infoPopup.classList.contains('active')) hideInfoPopup();
+    }
 });
