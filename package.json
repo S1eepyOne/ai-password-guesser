@@ -1,6 +1,6 @@
 {
   "name": "ai-password-guesser",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "AI-powered password guessing demonstration",
   "main": "server.js",
   "scripts": {
