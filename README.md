@@ -28,7 +28,9 @@ ai-password-guesser
 ├── server.js                # Server-side logic
 ├── package.json             # npm configuration file
 ├── .gitignore               # Files to ignore in version control
-└── README.md                # Project documentation
+├── LICENSE                  # Open Source License
+├── README.md                # Project documentation
+└── SECURITY.md                # Security Policy
 ```
 
 ## Quick Start (For Beginners)
