@@ -7,11 +7,6 @@ The AI Password Guesser is a web-based application that utilizes artificial inte
 ```
 ai-password-guesser
 ├── public
-│   ├── assets
-│   │   ├── favicon-16x16.png
-│   │   ├── favicon-32x32.png
-│   │   ├── icon-192x192.png
-│   │   └── icon-512x512.png
 │   ├── scripts
 │   │   ├── main.js
 │   │   └── worker.js
