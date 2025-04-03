@@ -23,6 +23,11 @@ When using this demo:
 - Keep your browser updated
 - Use the app on a secure network
 
+## Ethical and Legal Boundaries
+
+- Using tools to attempt unauthorized access to websites or systems is a violation of laws such as the Computer Fraud and Abuse Act (CFAA) in the United States and similar laws in other countries.
+- Such actions can lead to severe legal consequences, including fines and imprisonment.
+
 ## Implementation Details
 
 The application uses several security measures:
@@ -33,6 +38,9 @@ The application uses several security measures:
 - No external dependencies for core functionality
 - Client-side only processing
 
+## Responsible Use
+
+If you are interested in cybersecurity, consider learning about ethical hacking and penetration testing through legitimate channels. Certifications like Certified Ethical Hacker (CEH) or CompTIA Security+ can help you gain skills while adhering to ethical and legal standards.
 ## Local Development
 
 When contributing or running locally:
