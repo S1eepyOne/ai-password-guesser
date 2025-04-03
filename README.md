@@ -30,7 +30,7 @@ ai-password-guesser
 ├── .gitignore               # Files to ignore in version control
 ├── LICENSE                  # Open Source License
 ├── README.md                # Project documentation
-└── SECURITY.md                # Security Policy
+└── SECURITY.md              # Security Policy
 ```
 
 ## Quick Start (For Beginners)
