@@ -1,3 +1,5 @@
+import { CHARACTER_SET, PASSWORD_LENGTH } from './config.js';
+
 // This file handles user interactions on the webpage for the AI-based password guesser.
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -15,12 +17,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeInfoPopup = document.getElementById('closeInfoPopup');
     const strengthBar = document.getElementById('strengthBar');
     const strengthText = document.getElementById('strengthText');
+    const inputLabel = document.querySelector('.input-section p');
 
     let workers = [];
     let totalGuesses = 0;
     let completedGuesses = 0;
     let lastProgressValue = 0;
     let lastUpdate = 0;
+
+    // Dynamically update the input field and label based on PASSWORD_LENGTH
+    inputField.setAttribute('maxlength', PASSWORD_LENGTH);
+    inputLabel.textContent = `Enter a ${PASSWORD_LENGTH}-character password using letters, numbers, or symbols:`;
 
     function updateProgressBar() {
         const progressValue = (completedGuesses / totalGuesses) * 100;
@@ -89,8 +96,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function isValidPassword(password) {
-        const validCharacters = /^[a-zA-Z0-9!@#$%^&*()]+$/;
-        return password.length === 5 && validCharacters.test(password);
+        const validCharacters = new RegExp(`^[${CHARACTER_SET}]+$`);
+        return password.length === PASSWORD_LENGTH && validCharacters.test(password);
     }
 
     startButton.addEventListener('click', () => {
@@ -106,17 +113,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const password = inputField.value;
         if (!isValidPassword(password)) {
-            alert("Please enter a valid 5-character password using letters, numbers, or symbols.");
+            alert(`Please enter a valid ${PASSWORD_LENGTH}-character password using allowed characters.`);
             setInputFieldState(false); // Re-enable the input field if validation fails
             return;
         }
 
-        const characterSet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
         const numWorkers = 4;
-        const chunkSize = Math.ceil(characterSet.length / numWorkers);
-        totalGuesses = Math.pow(characterSet.length, password.length);
+        const chunkSize = Math.ceil(CHARACTER_SET.length / numWorkers);
+        totalGuesses = Math.pow(CHARACTER_SET.length, PASSWORD_LENGTH);
 
-        if (!characterSet || !password) {
+        if (!CHARACTER_SET || !password) {
             setInputFieldState(false); // Re-enable the input field if no password is provided
             return;
         }
@@ -124,8 +130,8 @@ document.addEventListener('DOMContentLoaded', () => {
         let workerProgress = Array(numWorkers).fill(0);
 
         for (let i = 0; i < numWorkers; i++) {
-            const worker = new Worker('scripts/worker.js');
-            const chunk = characterSet.slice(i * chunkSize, (i + 1) * chunkSize);
+            const worker = new Worker('scripts/worker.js', { type: 'module' }); // Add { type: 'module' }
+            const chunk = CHARACTER_SET.slice(i * chunkSize, (i + 1) * chunkSize);
 
             worker.postMessage({ password, characterSet: chunk });
 
@@ -139,9 +145,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     setInputFieldState(false); // Re-enable the input field when guessing is complete
                 } else {
                     workerProgress[i] = progress; // Update progress for this worker
-                    completedGuesses = workerProgress.reduce((sum, p) => 
+                    completedGuesses = workerProgress.reduce((sum, p) =>
                         sum + Math.floor((p / 100) * (totalGuesses / numWorkers)), 0);
-                    
+
                     // Throttle updates to every 100ms
                     if (Date.now() - lastUpdate > 100) {
                         requestAnimationFrame(updateProgressBar);
