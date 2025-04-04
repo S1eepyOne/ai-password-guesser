@@ -1,7 +1,7 @@
 # AI Password Guesser
 
 ## Overview
-The AI Password Guesser is a web-based application that utilizes artificial intelligence techniques to guess a 5-character password using letters, numbers, and symbols. The application features a user-friendly interface that allows users to interact with the password guessing algorithm.
+The AI Password Guesser is a web-based application that utilizes artificial intelligence techniques to guess a multi-character password using letters, numbers, and symbols. The application features a user-friendly interface that allows users to interact with the password guessing algorithm.
 
 ### Technical Architecture
 1. **Frontend**:
