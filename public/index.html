@@ -8,10 +8,6 @@
     <meta name="robots" content="noindex, nofollow">
     <title>CyberCrack: AI Password Detective</title>
     
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
-    
     <!-- Web App Manifest -->
     <link rel="manifest" href="manifest.json">
     
@@ -67,6 +63,10 @@
                 <p>This AI Password Guesser uses parallel processing with Web Workers to systematically generate and test possible password combinations. It divides the character set among multiple workers to efficiently search through all possible combinations until it finds the correct password. The process is visualized through a progress bar that shows the percentage of possible combinations tested.</p>
                 <button id="closeInfoPopup">Close</button>
             </div>
+        </div>
+
+        <div id="workerIndicator" class="worker-indicator">
+            Workers Running: <span id="workerCount">0</span>
         </div>
     </div>
     <script type="module" src="scripts/main.js"></script>

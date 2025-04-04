@@ -48,6 +48,7 @@ The AI Password Guesser is a web-based application that utilizes artificial inte
 ai-password-guesser
 ├── public
 │   ├── scripts
+│   │   ├── config.js
 │   │   ├── main.js
 │   │   └── worker.js
 │   ├── styles

@@ -1,11 +1,11 @@
-import { CHARACTER_SET, PASSWORD_LENGTH } from './config.js';
+import { CHARACTER_SET, PASSWORD_LENGTH, NUM_WORKERS, BATCH_SIZE, PROGRESS_UPDATE_INTERVAL } from './config.js';
 
 // This file handles user interactions on the webpage for the AI-based password guesser.
 
 document.addEventListener('DOMContentLoaded', () => {
     const startButton = document.getElementById('startGuessing');
     const stopButton = document.getElementById('stopGuessing');
-    const inputField = document.getElementById('passwordInput');
+    const passwordInput = document.getElementById('passwordInput');
     const output = document.getElementById('output');
     const progressBar = document.getElementById('progress');
     const progressText = document.getElementById('progressText');
@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const strengthBar = document.getElementById('strengthBar');
     const strengthText = document.getElementById('strengthText');
     const inputLabel = document.querySelector('.input-section p');
+    const workerCountElement = document.getElementById('workerCount');
 
     let workers = [];
     let totalGuesses = 0;
@@ -26,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let lastUpdate = 0;
 
     // Dynamically update the input field and label based on PASSWORD_LENGTH
-    inputField.setAttribute('maxlength', PASSWORD_LENGTH);
+    passwordInput.setAttribute('maxlength', PASSWORD_LENGTH);
     inputLabel.textContent = `Enter a ${PASSWORD_LENGTH}-character password using letters, numbers, or symbols:`;
 
     function updateProgressBar() {
@@ -75,6 +76,8 @@ document.addEventListener('DOMContentLoaded', () => {
         totalGuesses = 0;
         output.textContent = "";
         output.style.color = '#fff';
+        progressBar.style.width = "0%";
+        progressText.textContent = "0%";
     }
 
     // Unified popup handler
@@ -87,12 +90,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function setInputFieldState(isDisabled) {
-        inputField.disabled = isDisabled;
+        passwordInput.disabled = isDisabled;
+    }
+
+    function updateWorkerCount() {
+        workerCountElement.textContent = workers.length;
     }
 
     function terminateWorkers() {
-        workers.forEach((w) => w.terminate());
+        workers.forEach((worker) => worker.terminate());
         workers = [];
+        updateWorkerCount();
     }
 
     function isValidPassword(password) {
@@ -102,6 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     startButton.addEventListener('click', () => {
         resetState();
+        updateWorkerCount(); // Reset worker count display
 
         // Disable the password input field when guessing starts
         setInputFieldState(true);
@@ -111,15 +120,14 @@ document.addEventListener('DOMContentLoaded', () => {
         progressBar.style.display = 'block';
         output.textContent = "AI is guessing...";
 
-        const password = inputField.value;
+        const password = passwordInput.value;
         if (!isValidPassword(password)) {
             alert(`Please enter a valid ${PASSWORD_LENGTH}-character password using allowed characters.`);
             setInputFieldState(false); // Re-enable the input field if validation fails
             return;
         }
 
-        const numWorkers = 4;
-        const chunkSize = Math.ceil(CHARACTER_SET.length / numWorkers);
+        const chunkSize = Math.ceil(CHARACTER_SET.length / NUM_WORKERS);
         totalGuesses = Math.pow(CHARACTER_SET.length, PASSWORD_LENGTH);
 
         if (!CHARACTER_SET || !password) {
@@ -127,13 +135,18 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        let workerProgress = Array(numWorkers).fill(0);
+        let workerProgress = Array(NUM_WORKERS).fill(0);
 
-        for (let i = 0; i < numWorkers; i++) {
+        for (let i = 0; i < NUM_WORKERS; i++) {
             const worker = new Worker('scripts/worker.js', { type: 'module' }); // Add { type: 'module' }
             const chunk = CHARACTER_SET.slice(i * chunkSize, (i + 1) * chunkSize);
 
-            worker.postMessage({ password, characterSet: chunk });
+            worker.postMessage({
+                password,
+                characterSet: chunk,
+                batchSize: BATCH_SIZE,
+                progressUpdateInterval: PROGRESS_UPDATE_INTERVAL
+            });
 
             worker.onmessage = (event) => {
                 const { progress, guess, found } = event.data;
@@ -146,7 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     workerProgress[i] = progress; // Update progress for this worker
                     completedGuesses = workerProgress.reduce((sum, p) =>
-                        sum + Math.floor((p / 100) * (totalGuesses / numWorkers)), 0);
+                        sum + Math.floor((p / 100) * (totalGuesses / NUM_WORKERS)), 0);
 
                     // Throttle updates to every 100ms
                     if (Date.now() - lastUpdate > 100) {
@@ -162,11 +175,13 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             workers.push(worker);
+            updateWorkerCount(); // Update worker count when a new worker is added
         }
     });
 
     stopButton.addEventListener('click', () => {
         resetState();
+        updateWorkerCount(); // Reset worker count display
         displayOutput('Guessing stopped by the user.', false);
 
         // Re-enable the password input field when guessing stops
@@ -199,8 +214,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    inputField.addEventListener('input', () => {
-        updateStrengthMeter(inputField.value);
+    passwordInput.addEventListener('input', () => {
+        updateStrengthMeter(passwordInput.value);
     });
 
     function calculateStrength(password) {
@@ -250,3 +265,6 @@ document.addEventListener('keydown', (e) => {
         if (infoPopup.classList.contains('active')) hideInfoPopup();
     }
 });
+
+handlePopupClick(successPopup, hidePopup);
+handlePopupClick(infoPopup, hideInfoPopup);

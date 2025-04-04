@@ -1,7 +1,7 @@
 import { CHARACTER_SET, PASSWORD_LENGTH } from './config.js';
 
 onmessage = (e) => {
-    const { password, characterSet = CHARACTER_SET } = e.data;
+    const { password, characterSet = CHARACTER_SET, batchSize, progressUpdateInterval } = e.data;
 
     if (!characterSet || !password) {
         postMessage({ progress: 100, found: false });
@@ -39,15 +39,18 @@ onmessage = (e) => {
 
     for (const guess of generator) {
         currentGuessCount++;
-        const progress = (currentGuessCount / totalGuesses) * 100;
 
         if (guess === password) {
             postMessage({ progress: 100, guess, found: true });
             return;
         }
 
-        if (currentGuessCount % 10000 === 0) {
-            postMessage({ progress, guess, found: false });
+        if (currentGuessCount % batchSize === 0) {
+            const progress = (currentGuessCount / totalGuesses) * 100;
+
+            if (currentGuessCount % progressUpdateInterval === 0) {
+                postMessage({ progress, guess, found: false });
+            }
         }
     }
 
