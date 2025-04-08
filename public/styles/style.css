@@ -21,12 +21,17 @@ body {
     margin: 0;
     padding: 0;
     height: 100vh;
-    overflow: hidden;
+    overflow: auto; /* Allow scrolling */
     position: fixed;
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
+    scrollbar-width: none; /* For Firefox */
+}
+
+body::-webkit-scrollbar {
+    display: none; /* For Chrome, Safari, and Edge */
 }
 
 /* Header styling */
@@ -48,9 +53,14 @@ h1 {
     box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
     animation: fadeIn 0.6s ease-out;
     max-height: 90vh; /* Ensure the container fits within the viewport */
-    overflow-y: auto; /* Add scroll if content overflows */
+    overflow-y: auto; /* Allow vertical scrolling */
+    scrollbar-width: none; /* For Firefox */
     box-sizing: border-box;
     position: relative;
+}
+
+.container::-webkit-scrollbar {
+    display: none; /* For Chrome, Safari, and Edge */
 }
 
 /* Input section styling */
